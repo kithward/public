@@ -39,18 +39,26 @@ EOF
 
 # Try running the agent now but ignore failures.
 export SSH_AUTH_SOCK=/tmp/ssh_agent_auth_sock-$USER
-{ ssh-agent -t 20h -a "$SSH_AUTH_SOCK" || true ; } &> /dev/null
+{
+  ssh-agent -t 20h -a "$SSH_AUTH_SOCK" && {
+    echo "...now enter that same SSH key password one more time..."
+    ssh-add ~/.ssh/kithward_workstation.key
+  } || true
+} &> /dev/null
 
 echo
 echo "Checking GitHub access..."
 ssh_connect_output=$(ssh -T git@github.com 2>&1 || true)
 echo "$ssh_connect_output" | grep "success" &> /dev/null || {
-  echo "GitHub needs to be configured with this machine's public key."
-  echo "Visit https://github.com/settings/keys and select 'New SSH key'"
-  echo "Then copy the following public key there"
-  echo "------------------------------------------------------------------------------"
-  cat ~/.ssh/kithward_workstation.key.pub
-  echo "------------------------------------------------------------------------------"
+  sed 's/^    //' <<EOF
+    GitHub needs to be configured with this machine's public key.
+    
+      | Visit https://github.com/settings/keys and select 'New SSH key'      |
+      | Then copy the following public key there (not including the '----'). |
+    ------------------------------------------------------------------------------
+    $(cat ~/.ssh/kithward_workstation.key.pub)
+    ------------------------------------------------------------------------------
+EOF
 
   echo -n "Press enter when you've done the above..."
   read -r IGNORED
@@ -77,3 +85,14 @@ git config --get user.email &> /dev/null || {
 }
 echo "Done"
 
+cat <<EOF
+
+--------------------------------------------------------------------
+| Congrats! You now have a dev machine with SSH based access to    |
+| your GitHub account.                                             |
+|                                                                  |
+| If you're logged into this machine elsewhere, you may want to    |
+| log out and back in to make sure the ssh-agent is picked up.     |
+--------------------------------------------------------------------
+
+EOF
