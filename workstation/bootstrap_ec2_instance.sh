@@ -87,12 +87,14 @@ echo "Done"
 
 cat <<EOF
 
---------------------------------------------------------------------
-| Congrats! You now have a dev machine with SSH based access to    |
-| your GitHub account.                                             |
-|                                                                  |
-| If you're logged into this machine elsewhere, you may want to    |
-| log out and back in to make sure the ssh-agent is picked up.     |
---------------------------------------------------------------------
+------------------------------------------------------------
+| Congrats!                                                |
+|                                                          |
+| You now have a dev machine with SSH based access to      |
+| your GitHub account.                                     |
+|                                                          |
+| You should now log out and log back in to make sure the  |
+| new ssh-agent is picked up.                              |
+------------------------------------------------------------
 
 EOF
